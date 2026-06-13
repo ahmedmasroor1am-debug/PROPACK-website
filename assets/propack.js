@@ -11,7 +11,7 @@
   function header(){
     const links=NAV.map(n=>`<a href="${n.href}" class="${active===n.href?'active':''}">${n.label}</a>`).join('');
     return `<header class="site-header"><div class="wrap"><nav class="nav">
-      <a class="brand" href="index.html"><img src="assets/propack-logo.jpg" alt="Pro Pack"><span><span class="pro">Pro</span> <span class="pack">Pack</span></span></a>
+      <a class="brand" href="index.html"><img src="assets/logo/propack-monogram.svg" alt="Pro Pack"><span><span class="pro">Pro</span> <span class="pack">Pack</span></span></a>
       <div class="nav-links">${links}</div>
       <div class="nav-cta">
         <a class="btn btn-lime" href="quote.html">Request a Quote</a>
@@ -27,7 +27,7 @@
       <div class="wrap">
         <div class="footer-grid">
           <div>
-            <div class="footer-brand"><img src="assets/propack-logo.jpg" alt="Pro Pack">Pro Pack</div>
+            <div class="footer-brand"><img src="assets/logo/propack-monogram-white.svg" alt="Pro Pack">Pro Pack</div>
             <p style="max-width:330px;color:#bcd2ad;line-height:1.6">Sustainable carton &amp; corrugated packaging, engineered for brands that care how their products arrive — and what they leave behind.</p>
             <div style="display:flex;gap:10px;margin-top:18px">
               ${['in','x','ig','be'].map(s=>`<a href="#" aria-label="${s}" style="width:40px;height:40px;border:1px solid rgba(255,255,255,.18);border-radius:50%;display:grid;place-items:center;color:#cfe0c2;font-family:var(--font-mono);font-size:.72rem;text-transform:uppercase">${s}</a>`).join('')}
