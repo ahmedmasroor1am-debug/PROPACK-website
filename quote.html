@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request a Quote — Pro Pack</title>
+<meta name="description" content="Tell us about your product and volumes. We'll come back with structure options, samples and a transparent quote within one business day.">
+<link rel="icon" href="assets/propack-logo.jpg">
+<link rel="stylesheet" href="assets/propack.css">
+<style>
+.q-grid{display:grid; grid-template-columns:1.5fr 1fr; gap:48px; align-items:start}
+@media(max-width:900px){.q-grid{grid-template-columns:1fr; gap:36px}}
+.q-form{background:#fff; border:1px solid var(--line); border-radius:var(--r-lg); padding:clamp(26px,3.5vw,40px); box-shadow:var(--shadow-sm)}
+.q-side{display:flex; flex-direction:column; gap:22px; position:sticky; top:96px}
+@media(max-width:900px){.q-side{position:relative; top:0}}
+.side-card{background:var(--paper-2); border:1px solid var(--line); border-radius:var(--r-lg); padding:26px}
+.side-card.dark{background:var(--forest-2); color:#fff; border-color:transparent}
+.step-li{display:flex; gap:14px; padding:11px 0}
+.step-li .b{width:28px;height:28px;border-radius:50%;background:var(--lime);color:var(--forest-2);display:grid;place-items:center;font-weight:700;font-size:.85rem;flex:none}
+.spec-chip{display:none; align-items:center; gap:10px; background:var(--lime-soft); border:1px solid #cbe3a0; border-radius:var(--r-md); padding:14px 16px; margin-bottom:24px; font-size:.92rem}
+.spec-chip.show{display:flex}
+.spec-chip strong{color:var(--forest)}
+.ok-msg{display:none; text-align:center; padding:30px 10px}
+.ok-msg.show{display:block}
+.ok-ico{width:64px;height:64px;border-radius:50%;background:var(--lime);color:var(--forest-2);display:grid;place-items:center;margin:0 auto 18px}
+.ok-ico svg{width:32px;height:32px}
+</style>
+</head>
+<body data-page="quote.html">
+<div data-mount="header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumb"><a href="index.html">Home</a><span class="sep">/</span> Request a Quote</div>
+    <div style="max-width:680px">
+      <span class="eyebrow reveal">Let's make something better</span>
+      <h1 class="h-xl reveal" data-d="1" style="margin-top:16px">Request a quote.</h1>
+      <p class="lead reveal" data-d="2" style="margin-top:16px">Tell us about your product and volumes. We'll come back with structure options, samples and transparent pricing — within one business day.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:18px">
+  <div class="wrap">
+    <div class="q-grid">
+      <!-- FORM -->
+      <div class="q-form">
+        <form id="quoteForm">
+          <div class="spec-chip" id="specChip">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16652b" stroke-width="1.7"><path d="M12 3l8 4-8 4-8-4z"/><path d="M4 7v8l8 4 8-4V7"/></svg>
+            <span id="specText">Spec loaded from Build Your Box.</span>
+          </div>
+
+          <h3 class="h-md" style="margin-bottom:18px">Your details</h3>
+          <div class="form-grid">
+            <div class="field"><label>Full name <span class="req">*</span></label><input class="input" name="name" required placeholder="Jane Doe"></div>
+            <div class="field"><label>Company <span class="req">*</span></label><input class="input" name="company" required placeholder="Acme Brands"></div>
+            <div class="field"><label>Work email <span class="req">*</span></label><input class="input" type="email" name="email" required placeholder="jane@acme.com"></div>
+            <div class="field"><label>Phone</label><input class="input" name="phone" placeholder="+971 …"></div>
+          </div>
+
+          <h3 class="h-md" style="margin:26px 0 16px">What do you need?</h3>
+          <div class="field">
+            <label>Product type</label>
+            <div class="choice-row" data-choice="product">
+              <span class="choice sel">Corrugated boxes</span><span class="choice">Folding cartons</span><span class="choice">Custom printed</span><span class="choice">Retail / display</span><span class="choice">Food-grade</span><span class="choice">E-commerce mailers</span><span class="choice">Industrial</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>Industry</label>
+            <div class="choice-row" data-choice="industry">
+              <span class="choice">Food &amp; Beverage</span><span class="choice">Cosmetics</span><span class="choice">Electronics</span><span class="choice">Retail</span><span class="choice">E-commerce</span><span class="choice">Pharma</span><span class="choice">Logistics</span>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label>Board / material</label>
+              <select class="select" name="board"><option>Natural Kraft</option><option>Bleached White</option><option>E-flute Corrugated</option><option>Double-wall Corrugated</option><option>Food-grade barrier board</option><option>Not sure — advise me</option></select>
+            </div>
+            <div class="field"><label>Print finish</label>
+              <select class="select" name="print"><option>Unprinted</option><option>1-colour logo</option><option>Full colour (litho)</option><option>Full colour + special finish</option></select>
+            </div>
+            <div class="field"><label>Approx. quantity</label>
+              <select class="select" name="qty"><option>250 – 500</option><option selected>1,000 – 5,000</option><option>5,000 – 20,000</option><option>20,000 – 50,000</option><option>50,000+</option></select>
+            </div>
+            <div class="field"><label>Dimensions (L × W × H)</label><input class="input" name="dims" placeholder="e.g. 30 × 22 × 8 cm"></div>
+          </div>
+          <div class="field full"><label>Tell us about your project</label><textarea class="textarea" name="message" placeholder="Product, timelines, any artwork or sustainability requirements…"></textarea></div>
+
+          <button class="btn btn-lime btn-lg btn-block" type="submit" style="margin-top:8px">Send request <span class="arrow">→</span></button>
+          <p class="muted" style="font-size:.82rem;text-align:center;margin:14px 0 0">No obligation. We'll never share your details. Typical reply within one business day.</p>
+        </form>
+
+        <div class="ok-msg" id="okMsg">
+          <div class="ok-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12l5 5 9-11"/></svg></div>
+          <h3 class="h-md" style="margin-bottom:8px">Request received — thank you!</h3>
+          <p class="muted" style="max-width:40ch;margin:0 auto">Our team will review your spec and reply within one business day. Want to refine it while you wait?</p>
+          <a class="btn btn-ghost" href="build.html" style="margin-top:20px">Back to Build Your Box</a>
+        </div>
+      </div>
+
+      <!-- SIDE -->
+      <div class="q-side">
+        <div class="side-card dark">
+          <h3 style="color:#fff;margin-bottom:6px">What happens next</h3>
+          <div class="step-li"><span class="b">1</span><div><strong style="display:block">We review your brief</strong><span style="color:#bcd2ad;font-size:.92rem">Structure, board and print, costed properly.</span></div></div>
+          <div class="step-li"><span class="b">2</span><div><strong style="display:block">Samples &amp; quote</strong><span style="color:#bcd2ad;font-size:.92rem">Physical prototypes and transparent pricing.</span></div></div>
+          <div class="step-li"><span class="b">3</span><div><strong style="display:block">Approve &amp; produce</strong><span style="color:#bcd2ad;font-size:.92rem">Sign off, then we manufacture and deliver.</span></div></div>
+        </div>
+        <div class="side-card">
+          <h4 style="font-family:var(--font-text);font-weight:700;margin-bottom:12px">Prefer to talk?</h4>
+          <a href="mailto:hello@propack.co" style="display:flex;gap:10px;align-items:center;padding:8px 0;font-weight:600;color:var(--forest)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>hello@propack.co</a>
+          <a href="tel:+97140000000" style="display:flex;gap:10px;align-items:center;padding:8px 0;font-weight:600;color:var(--forest)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h4l2 5-3 2a12 12 0 005 5l2-3 5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z"/></svg>+971 4 000 0000</a>
+          <p class="muted" style="font-size:.9rem;margin:12px 0 0;line-height:1.6">Pro Pack Manufacturing FZ<br>Industrial Estate, Plot 14<br>Mon–Sat · 8am–6pm</p>
+        </div>
+        <div class="side-card" style="display:flex;gap:14px;flex-wrap:wrap;justify-content:space-between">
+          <div><div class="stat-num" style="font-size:1.6rem">16+</div><div class="stat-label" style="margin-top:2px">Years</div></div>
+          <div><div class="stat-num" style="font-size:1.6rem">480+</div><div class="stat-label" style="margin-top:2px">Brands</div></div>
+          <div><div class="stat-num" style="font-size:1.6rem">99.4%</div><div class="stat-label" style="margin-top:2px">On-time</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div data-mount="footer"></div>
+<script src="assets/propack.js"></script>
+<script>
+// choice chips (single-select per group)
+document.querySelectorAll('[data-choice]').forEach(grp=>{
+  grp.addEventListener('click',e=>{ const c=e.target.closest('.choice'); if(!c)return;
+    grp.querySelectorAll('.choice').forEach(x=>x.classList.toggle('sel',x===c)); });
+});
+// pull spec from Build Your Box
+try{
+  const raw=localStorage.getItem('propack_spec');
+  if(raw){ const s=JSON.parse(raw);
+    const chip=document.getElementById('specChip');
+    document.getElementById('specText').innerHTML=`Spec loaded from <strong>Build Your Box</strong>: ${s.L}×${s.W}×${s.H}cm · ${({kraft:'Kraft',white:'White',clay:'Terracotta',lime:'Lime',forest:'Forest'})[s.material]||s.material} · ${({none:'unprinted',logo:'1-colour',full:'full colour'})[s.print]||s.print} · ${Number(s.qty).toLocaleString()} units · ≈ $${s.unit}/unit`;
+    chip.classList.add('show');
+    const dims=document.querySelector('[name=dims]'); if(dims) dims.value=`${s.L} × ${s.W} × ${s.H} cm`;
+    // preselect print
+    const pm={none:'Unprinted',logo:'1-colour logo',full:'Full colour (litho)'}[s.print];
+    if(pm){ const sel=document.querySelector('[name=print]'); [...sel.options].forEach(o=>{ if(o.text===pm) o.selected=true; }); }
+  }
+}catch(e){}
+// submit
+document.getElementById('quoteForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  document.getElementById('quoteForm').style.display='none';
+  document.getElementById('okMsg').classList.add('show');
+  window.scrollTo({top:document.querySelector('.q-form').offsetTop-100, behavior:'smooth'});
+});
+</script>
+</body>
+</html>

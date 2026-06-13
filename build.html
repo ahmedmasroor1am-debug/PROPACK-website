@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build Your Box — Pro Pack</title>
+<meta name="description" content="Configure your custom carton in 3D — style, size, board and print — and get an instant price feel.">
+<link rel="icon" href="assets/propack-logo.jpg">
+<link rel="stylesheet" href="assets/propack.css">
+</head>
+<body data-page="build.html">
+<div data-mount="header"></div>
+
+<section class="page-hero">
+  <div class="wrap">
+    <div class="crumb"><a href="index.html">Home</a><span class="sep">/</span> Build Your Box</div>
+    <div style="max-width:680px">
+      <span class="eyebrow">Interactive configurator</span>
+      <h1 class="h-xl" style="margin-top:16px">Build your box in 3D.</h1>
+      <p class="lead" style="margin-top:16px">Choose a style, size, board and finish. Watch it build live, get an instant price feel, then send the exact spec to our team for a formal quote.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:18px">
+  <div class="wrap">
+    <div class="cfg-grid">
+      <!-- STAGE -->
+      <div class="cfg-stage">
+        <span class="cfg-hint">◐ Drag to rotate</span>
+        <canvas id="cfgCanvas"></canvas>
+        <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px">
+          <button class="choice" id="toggleOpen" style="font-size:.85rem;padding:9px 16px">Open lid</button>
+          <button class="choice" id="toggleSpin" style="font-size:.85rem;padding:9px 16px">Auto-spin</button>
+        </div>
+      </div>
+
+      <!-- PANEL -->
+      <div class="cfg-panel">
+        <div class="cfg-group">
+          <h4>Box style</h4>
+          <div class="opt-row" id="styleOpts">
+            <button class="opt sel" data-style="mailer">Mailer<small>Flat, wide — DTC &amp; subscription</small></button>
+            <button class="opt" data-style="rsc">Shipping (RSC)<small>Classic regular slotted carton</small></button>
+            <button class="opt" data-style="tall">Tall carton<small>Bottles, jars &amp; uprights</small></button>
+            <button class="opt" data-style="cube">Cube<small>Gifting &amp; presentation</small></button>
+          </div>
+        </div>
+
+        <div class="cfg-group">
+          <h4>Dimensions <span class="v" id="dimVal">30 × 22 × 8 cm</span></h4>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <label style="font-size:.84rem;color:var(--muted)">Length <input type="range" class="range" id="rL" min="10" max="60" value="30"></label>
+            <label style="font-size:.84rem;color:var(--muted)">Width <input type="range" class="range" id="rW" min="8" max="50" value="22"></label>
+            <label style="font-size:.84rem;color:var(--muted)">Height <input type="range" class="range" id="rH" min="4" max="50" value="8"></label>
+          </div>
+        </div>
+
+        <div class="cfg-group">
+          <h4>Board &amp; colour <span class="v" id="matVal">Natural Kraft</span></h4>
+          <div class="swatch-row" id="swatches"></div>
+        </div>
+
+        <div class="cfg-group">
+          <h4>Print finish</h4>
+          <div class="opt-row" id="printOpts">
+            <button class="opt sel" data-print="none">Unprinted<small>Natural, no ink</small></button>
+            <button class="opt" data-print="logo">1-colour logo<small>Single brand mark</small></button>
+            <button class="opt" data-print="full">Full colour<small>Edge-to-edge litho</small></button>
+          </div>
+        </div>
+
+        <div class="cfg-group">
+          <h4>Order quantity <span class="v" id="qtyVal">1,000 units</span></h4>
+          <input type="range" class="range" id="rQty" min="0" max="5" value="2">
+          <div style="display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:.7rem;color:var(--muted);margin-top:6px"><span>250</span><span>50k+</span></div>
+        </div>
+
+        <div class="price-card">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+            <span style="color:#bcd2ad;font-size:.9rem">Indicative price</span>
+            <span class="tag" style="color:var(--lime-2)">Est.</span>
+          </div>
+          <div class="est"><span id="unitPrice">$0.42</span> <small>/ unit</small></div>
+          <div style="color:#bcd2ad;font-size:.92rem;margin-top:6px">≈ <span id="totalPrice">$420</span> for <span id="totalQty">1,000</span> units</div>
+          <a class="btn btn-lime btn-block" id="sendSpec" href="quote.html" style="margin-top:18px">Send this spec for a quote <span class="arrow">→</span></a>
+          <p style="color:#9fb893;font-size:.78rem;margin:12px 0 0;line-height:1.5">Indicative only — final pricing depends on board grade, tooling and artwork. We'll confirm within one business day.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div data-mount="footer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="assets/carton3d.js"></script>
+<script src="assets/propack.js"></script>
+<script src="assets/build.js"></script>
+</body>
+</html>
