@@ -76,21 +76,90 @@
   document.getElementById('toggleSpin').addEventListener('click',e=>{ autoSpin=!autoSpin; e.target.classList.toggle('sel',autoSpin); if(stage)stage.setAutoRotate(autoSpin); });
 
   // ---- price model ----
-  function price(){
+  // Mirrors the ERP quotation PricingCalculator (per-carton cost buildup, PKR).
+  // Live rates are fetched from the ERP's public-pricing edge function on
+  // load; the constants below are fallbacks when the feed is unreachable.
+  const RATES_URL='https://gxgmaycjztrrlrmjmxjo.supabase.co/functions/v1/public-pricing';
+  const RATES={
+    plant_rate_3ply:0.012,   // PKR per sq inch
+    plant_rate_5ply:0.0145,
+    conversion_overhead:10,  // % of (paper + plant)
+    flexo_rate_per_color:3,  // PKR per carton per colour
+    sell_multiplier:1.10     // cost → sell price factor (standard terms)
+  };
+  // Liner paper PKR/kg by board choice (ERP supplier_price_list equivalents)
+  const LINER_RATE={kraft:140, white:195, clay:150, lime:200, forest:200};
+  const FLUTING={gsm:105, rate:110};   // corrugating medium
+  const MIDDLE ={gsm:127, rate:115};   // middle liner (5-ply only)
+  const LINER_GSM=150;
+  // One-time tooling amortized across the order (plates/stereos, dies)
+  const SETUP={none:0, logo:12000, full:45000};
+  // Board strength by style: shipping formats get 5-ply, light formats 3-ply
+  const PLY={mailer:3, rsc:5, tall:5, cube:3};
+
+  // Box dims (cm) -> flat blank that gets cut, like reel × cutting size in the ERP
+  function blankSizeCm(){
     const {L,W,H}=state;
-    const area=2*(L*W + L*H + W*H); // cm2
-    const board={kraft:1,white:1.16,clay:1.22,lime:1.2,forest:1.26}[state.material];
-    const pr={none:1,logo:1.28,full:1.62}[state.print];
-    let unit=area*0.00019*board*pr + 0.06;
+    if(state.style==='mailer') return {bl:L+2*H+4, bw:W+2.6*H+2}; // die-cut mailer blank
+    return {bl:2*(L+W)+4, bw:W+H}; // RSC-style: wrap + glue flap × (height + flaps)
+  }
+
+  const pkr=n=>'PKR '+Math.round(n).toLocaleString('en-PK');
+
+  // Pull current rates from the ERP; silently keep fallbacks on any failure.
+  fetch(RATES_URL).then(r=>r.ok?r.json():null).then(d=>{
+    if(!d) return;
+    const num=v=>typeof v==='number'&&isFinite(v)&&v>0;
+    Object.keys(RATES).forEach(k=>{ if(d.rates&&num(d.rates[k])) RATES[k]=d.rates[k]; });
+    if(d.paper){
+      if(num(d.paper.kraft_liner)){ LINER_RATE.kraft=d.paper.kraft_liner; LINER_RATE.clay=d.paper.kraft_liner*1.07; }
+      if(num(d.paper.white_liner)){ LINER_RATE.white=d.paper.white_liner; LINER_RATE.lime=LINER_RATE.forest=d.paper.white_liner*1.03; }
+      if(num(d.paper.fluting)) FLUTING.rate=d.paper.fluting;
+      if(num(d.paper.middle)) MIDDLE.rate=d.paper.middle;
+    }
+    price();
+  }).catch(()=>{});
+
+  function price(){
+    const ply=PLY[state.style]||3;
+    const {bl,bw}=blankSizeCm();
+    const sqIn=(bl/2.54)*(bw/2.54);
+
+    // Paper: area(sqin) × gsm / 1,550,000 = kg; flute layers take ×1.4 (ERP formula)
+    const liner={gsm:LINER_GSM, rate:LINER_RATE[state.material]||LINER_RATE.kraft};
+    const layers= ply===5
+      ? [liner,{...FLUTING,flute:true},MIDDLE,{...FLUTING,flute:true},liner]
+      : [liner,{...FLUTING,flute:true},liner];
+    let paper=0;
+    layers.forEach(l=>{ let c=sqIn*l.gsm/1550000*l.rate; if(l.flute)c*=1.4; paper+=c; });
+
+    const plant=sqIn*(ply===5?RATES.plant_rate_5ply:RATES.plant_rate_3ply);
+    const conversion=(paper+plant)*RATES.conversion_overhead/100;
+    const printing=state.print==='logo'?RATES.flexo_rate_per_color
+      : state.print==='full'?RATES.flexo_rate_per_color*4 : 0;
+
     const qty=QTYS[state.qtyIdx];
-    const disc=qty>=50000?0.62:qty>=20000?0.7:qty>=5000?0.8:qty>=1000?0.9:qty>=500?0.97:1;
-    unit=unit*disc;
+    const setup=(SETUP[state.print]||0)/qty;
+    const totalCost=paper+plant+conversion+printing+setup;
+    const unit=totalCost*RATES.sell_multiplier;
     const total=unit*qty;
-    document.getElementById('unitPrice').textContent='$'+unit.toFixed(2);
-    document.getElementById('totalPrice').textContent='$'+Math.round(total).toLocaleString();
+
+    document.getElementById('unitPrice').textContent='PKR '+unit.toFixed(2);
+    document.getElementById('totalPrice').textContent=pkr(total);
     document.getElementById('totalQty').textContent=qty.toLocaleString();
+    const brk=document.getElementById('priceBreak');
+    if(brk){
+      const row=(k,v)=>`<div style="display:flex;justify-content:space-between"><span>${k}</span><span>${v}</span></div>`;
+      brk.innerHTML=
+        row(`Board (${ply}-ply blank ${Math.round(bl)}×${Math.round(bw)} cm)`, 'PKR '+paper.toFixed(2))+
+        row('Manufacturing & conversion', 'PKR '+(plant+conversion).toFixed(2))+
+        (printing+setup>0?row('Printing & tooling', 'PKR '+(printing+setup).toFixed(2)):'');
+    }
     // stash spec for quote page
-    try{ localStorage.setItem('propack_spec', JSON.stringify({...state, qty, unit:unit.toFixed(2), total:Math.round(total)})); }catch(e){}
+    try{ localStorage.setItem('propack_spec', JSON.stringify({...state, qty, ply, currency:'PKR',
+      unit:unit.toFixed(2), total:Math.round(total),
+      breakdown:{paper:+paper.toFixed(2), plant:+plant.toFixed(2), conversion:+conversion.toFixed(2),
+        printing:+printing.toFixed(2), setup:+setup.toFixed(2)} })); }catch(e){}
   }
 
   updDim(); price();

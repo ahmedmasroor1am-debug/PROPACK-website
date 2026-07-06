@@ -135,7 +135,7 @@ try{
   const raw=localStorage.getItem('propack_spec');
   if(raw){ const s=JSON.parse(raw);
     const chip=document.getElementById('specChip');
-    document.getElementById('specText').innerHTML=`Spec loaded from <strong>Build Your Box</strong>: ${s.L}×${s.W}×${s.H}cm · ${({kraft:'Kraft',white:'White',clay:'Terracotta',lime:'Lime',forest:'Forest'})[s.material]||s.material} · ${({none:'unprinted',logo:'1-colour',full:'full colour'})[s.print]||s.print} · ${Number(s.qty).toLocaleString()} units · ≈ $${s.unit}/unit`;
+    document.getElementById('specText').innerHTML=`Spec loaded from <strong>Build Your Box</strong>: ${s.L}×${s.W}×${s.H}cm · ${({kraft:'Kraft',white:'White',clay:'Terracotta',lime:'Lime',forest:'Forest'})[s.material]||s.material} · ${({none:'unprinted',logo:'1-colour',full:'full colour'})[s.print]||s.print} · ${Number(s.qty).toLocaleString()} units · ≈ ${s.currency==='PKR'?'PKR ':'$'}${s.unit}/unit`;
     chip.classList.add('show');
     const dims=document.querySelector('[name=dims]'); if(dims) dims.value=`${s.L} × ${s.W} × ${s.H} cm`;
     // preselect print
