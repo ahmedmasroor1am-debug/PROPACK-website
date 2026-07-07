@@ -1,6 +1,9 @@
 /* PRO PACK — Build Your Box configurator */
 (function(){
-  const state={ style:'mailer', L:30, W:22, H:8, material:'kraft', print:'none', qtyIdx:2 };
+  const state={ style:'mailer', L:30, W:22, H:8, material:'kraft', print:'none', qtyIdx:2,
+    boardMode:'auto', customPly:3,
+    customLayers:{3:['k150','sf110','k150'], 5:['k150','sf110','sf110','sf110','k150']},
+    loadKg:15, stackCount:10 };
   const QTYS=[250,500,1000,5000,20000,50000];
   const STYLES={
     mailer:{L:30,W:22,H:8}, rsc:{L:30,W:30,H:24}, tall:{L:20,W:20,H:34}, cube:{L:24,W:24,H:24}
@@ -71,6 +74,44 @@
   const rq=document.getElementById('rQty');
   rq.addEventListener('input',()=>{ state.qtyIdx=+rq.value; document.getElementById('qtyVal').textContent=QTYS[state.qtyIdx].toLocaleString()+' units'; price(); });
 
+  // ---- board strength ----
+  const LAYER_LABELS={3:['Outer liner','Flute','Inner liner'],
+    5:['Outer liner','Flute','Middle','Flute','Inner liner']};
+  const selStyle='width:100%;margin-top:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:transparent;font:inherit;font-size:.9rem;color:inherit';
+  function renderCustomLayers(){
+    const wrap=document.getElementById('layerSelects'); if(!wrap) return;
+    const ply=state.customPly;
+    wrap.innerHTML=state.customLayers[ply].map((sel,i)=>
+      `<label style="font-size:.84rem;color:var(--muted)">${LAYER_LABELS[ply][i]}
+        <select class="lsel" data-i="${i}" style="${selStyle}">${
+          Object.entries(QUALITIES).filter(([k])=>k!=='wt160')
+            .map(([k,q])=>`<option value="${k}" ${k===sel?'selected':''}>${q.n}</option>`).join('')
+        }</select></label>`).join('');
+  }
+  document.getElementById('boardModeOpts').addEventListener('click',e=>{
+    const b=e.target.closest('.opt'); if(!b)return;
+    state.boardMode=b.dataset.bmode;
+    document.querySelectorAll('#boardModeOpts .opt').forEach(o=>o.classList.toggle('sel',o===b));
+    document.getElementById('guidedPane').style.display=state.boardMode==='guided'?'block':'none';
+    document.getElementById('customPane').style.display=state.boardMode==='custom'?'block':'none';
+    if(state.boardMode==='custom') renderCustomLayers();
+    price();
+  });
+  document.getElementById('plyOpts').addEventListener('click',e=>{
+    const b=e.target.closest('.opt'); if(!b)return;
+    state.customPly=+b.dataset.cply;
+    document.querySelectorAll('#plyOpts .opt').forEach(o=>o.classList.toggle('sel',o===b));
+    renderCustomLayers(); price();
+  });
+  document.getElementById('layerSelects').addEventListener('change',e=>{
+    const s=e.target.closest('.lsel'); if(!s)return;
+    state.customLayers[state.customPly][+s.dataset.i]=s.value; price();
+  });
+  [['gWeight','loadKg'],['gStack','stackCount']].forEach(([id,key])=>{
+    const el=document.getElementById(id);
+    el.addEventListener('input',()=>{ state[key]=Math.max(1,+el.value||1); price(); });
+  });
+
   // ---- toggles ----
   document.getElementById('toggleOpen').addEventListener('click',e=>{ open=!open; e.target.classList.toggle('sel',open); e.target.textContent=open?'Close lid':'Open lid'; if(stage)stage.carton.setOpen(open?1:0.05); });
   document.getElementById('toggleSpin').addEventListener('click',e=>{ autoSpin=!autoSpin; e.target.classList.toggle('sel',autoSpin); if(stage)stage.setAutoRotate(autoSpin); });
@@ -87,11 +128,25 @@
     flexo_rate_per_color:3,  // PKR per carton per colour
     sell_multiplier:1.10     // cost → sell price factor (standard terms)
   };
-  // Liner paper PKR/kg by board choice (ERP supplier_price_list equivalents)
-  const LINER_RATE={kraft:140, white:195, clay:150, lime:200, forest:200};
-  const FLUTING={gsm:105, rate:110};   // corrugating medium
-  const MIDDLE ={gsm:127, rate:115};   // middle liner (5-ply only)
-  const LINER_GSM=150;
+  // Paper qualities (PKR/kg fallbacks; live rates from the ERP feed override)
+  const QUALITIES={
+    k110:{n:'Kraft 110',  family:'kraft', gsm:110, rate:120},
+    k150:{n:'Kraft 150',  family:'kraft', gsm:150, rate:140},
+    k160:{n:'Kraft 160',  family:'kraft', gsm:160, rate:150},
+    u120:{n:'Ultra 120',  family:'ultra', gsm:120, rate:165},
+    u140:{n:'Ultra 140',  family:'ultra', gsm:140, rate:175},
+    sf110:{n:'Semi fluting 110', family:'semi', gsm:110, rate:105},
+    wt160:{n:'White top 160', family:'white', gsm:160, rate:195}
+  };
+  // Board specs, layers outer→inner; flutes are L2 (and L4 on 5-ply)
+  const SPECS={
+    three_std:  {ply:3, layers:['k150','sf110','k150'], label:'3-ply standard'},
+    three_heavy:{ply:3, layers:['k160','u140','k160'],  label:'3-ply heavy duty'},
+    five_std:   {ply:5, layers:['k150','sf110','sf110','sf110','k150'], label:'5-ply standard'},
+    five_heavy: {ply:5, layers:['k160','u120','k110','u120','k160'],    label:'5-ply heavy duty'}
+  };
+  // Guided mode: required bearing capacity (kg, already ×2 safety) → spec
+  const specForCapacity=cap=> cap<=60?'three_std':cap<=120?'three_heavy':cap<=150?'five_std':'five_heavy';
   // One-time tooling amortized across the order (plates/stereos, dies)
   const SETUP={none:0, logo:12000, full:45000};
   // Board strength by style: shipping formats get 5-ply, light formats 3-ply
@@ -111,27 +166,49 @@
     if(!d) return;
     const num=v=>typeof v==='number'&&isFinite(v)&&v>0;
     Object.keys(RATES).forEach(k=>{ if(d.rates&&num(d.rates[k])) RATES[k]=d.rates[k]; });
-    if(d.paper){
-      if(num(d.paper.kraft_liner)){ LINER_RATE.kraft=d.paper.kraft_liner; LINER_RATE.clay=d.paper.kraft_liner*1.07; }
-      if(num(d.paper.white_liner)){ LINER_RATE.white=d.paper.white_liner; LINER_RATE.lime=LINER_RATE.forest=d.paper.white_liner*1.03; }
-      if(num(d.paper.fluting)) FLUTING.rate=d.paper.fluting;
-      if(num(d.paper.middle)) MIDDLE.rate=d.paper.middle;
+    if(Array.isArray(d.paper)){
+      d.paper.forEach(p=>{ Object.values(QUALITIES).forEach(q=>{
+        if(q.family===p.family && Number(q.gsm)===Number(p.gsm) && num(p.rate)) q.rate=p.rate; }); });
     }
     price();
   }).catch(()=>{});
 
-  function price(){
+  // Active board spec from the selected mode
+  function activeSpec(){
+    if(state.boardMode==='custom'){
+      const ply=state.customPly;
+      return {ply, layers:state.customLayers[ply].slice(), label:ply+'-ply custom', cap:null};
+    }
+    if(state.boardMode==='guided'){
+      const bears=Math.max(1,state.loadKg)*Math.max(1,state.stackCount);
+      const cap=bears*2; // spec for double the real load
+      return {...SPECS[specForCapacity(cap)], cap, bears};
+    }
     const ply=PLY[state.style]||3;
+    return {...(ply===5?SPECS.five_std:SPECS.three_std), cap:null};
+  }
+
+  function price(){
+    const spec=activeSpec();
+    const ply=spec.ply;
     const {bl,bw}=blankSizeCm();
     const sqIn=(bl/2.54)*(bw/2.54);
 
     // Paper: area(sqin) × gsm / 1,550,000 = kg; flute layers take ×1.4 (ERP formula)
-    const liner={gsm:LINER_GSM, rate:LINER_RATE[state.material]||LINER_RATE.kraft};
-    const layers= ply===5
-      ? [liner,{...FLUTING,flute:true},MIDDLE,{...FLUTING,flute:true},liner]
-      : [liner,{...FLUTING,flute:true},liner];
+    const whiteFace=['white','lime','forest'].includes(state.material)&&state.boardMode!=='custom';
     let paper=0;
-    layers.forEach(l=>{ let c=sqIn*l.gsm/1550000*l.rate; if(l.flute)c*=1.4; paper+=c; });
+    spec.layers.forEach((key,i)=>{
+      let q=QUALITIES[key];
+      if(i===0&&whiteFace) q=QUALITIES.wt160; // white-faced board needs a white top liner
+      const isFlute= ply===3? i===1 : (i===1||i===3);
+      let c=sqIn*q.gsm/1550000*q.rate; if(isFlute)c*=1.4; paper+=c;
+    });
+
+    const sv=document.getElementById('specVal'); if(sv) sv.textContent=spec.label;
+    const go=document.getElementById('guidedOut');
+    if(go&&state.boardMode==='guided'){
+      go.innerHTML=`Bottom box bears ~<strong>${spec.bears} kg</strong>; we spec for double (<strong>${spec.cap} kg</strong>) → <strong>${spec.label}</strong>: ${spec.layers.map(k=>QUALITIES[k].n).join(' / ')}`;
+    }
 
     const plant=sqIn*(ply===5?RATES.plant_rate_5ply:RATES.plant_rate_3ply);
     const conversion=(paper+plant)*RATES.conversion_overhead/100;
@@ -151,13 +228,16 @@
     if(brk){
       const row=(k,v)=>`<div style="display:flex;justify-content:space-between"><span>${k}</span><span>${v}</span></div>`;
       brk.innerHTML=
-        row(`Board (${ply}-ply blank ${Math.round(bl)}×${Math.round(bw)} cm)`, 'PKR '+paper.toFixed(2))+
+        row(`Board (${spec.label}, blank ${Math.round(bl)}×${Math.round(bw)} cm)`, 'PKR '+paper.toFixed(2))+
         row('Manufacturing & conversion', 'PKR '+(plant+conversion).toFixed(2))+
         (printing+setup>0?row('Printing & tooling', 'PKR '+(printing+setup).toFixed(2)):'');
     }
     // stash spec for quote page
     try{ localStorage.setItem('propack_spec', JSON.stringify({...state, qty, ply, currency:'PKR',
       unit:unit.toFixed(2), total:Math.round(total),
+      board:{label:spec.label, ply, layers:spec.layers.map(k=>QUALITIES[k].n),
+        capacityKg:spec.cap||null, loadKg:state.boardMode==='guided'?state.loadKg:null,
+        stackCount:state.boardMode==='guided'?state.stackCount:null},
       breakdown:{paper:+paper.toFixed(2), plant:+plant.toFixed(2), conversion:+conversion.toFixed(2),
         printing:+printing.toFixed(2), setup:+setup.toFixed(2)} })); }catch(e){}
   }

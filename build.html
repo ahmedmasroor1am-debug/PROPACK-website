@@ -62,6 +62,31 @@
         </div>
 
         <div class="cfg-group">
+          <h4>Board strength <span class="v" id="specVal">3-ply standard</span></h4>
+          <div class="opt-row" id="boardModeOpts">
+            <button class="opt sel" data-bmode="auto">Standard<small>Matched to box style</small></button>
+            <button class="opt" data-bmode="guided">Help me choose<small>By load &amp; stacking</small></button>
+            <button class="opt" data-bmode="custom">I know my spec<small>Paper per layer</small></button>
+          </div>
+          <div id="guidedPane" style="display:none;margin-top:14px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <label style="font-size:.84rem;color:var(--muted)">Weight per box (kg)
+                <input type="number" id="gWeight" min="1" value="15" style="width:100%;margin-top:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:transparent;font:inherit;font-size:.9rem;color:inherit"></label>
+              <label style="font-size:.84rem;color:var(--muted)">Boxes stacked on top
+                <input type="number" id="gStack" min="1" value="10" style="width:100%;margin-top:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:transparent;font:inherit;font-size:.9rem;color:inherit"></label>
+            </div>
+            <p id="guidedOut" style="font-size:.82rem;color:var(--muted);margin:12px 0 0;line-height:1.6"></p>
+          </div>
+          <div id="customPane" style="display:none;margin-top:14px">
+            <div class="opt-row" id="plyOpts" style="margin-bottom:12px">
+              <button class="opt sel" data-cply="3">3-ply<small>Single wall</small></button>
+              <button class="opt" data-cply="5">5-ply<small>Double wall</small></button>
+            </div>
+            <div id="layerSelects" style="display:flex;flex-direction:column;gap:10px"></div>
+          </div>
+        </div>
+
+        <div class="cfg-group">
           <h4>Print finish</h4>
           <div class="opt-row" id="printOpts">
             <button class="opt sel" data-print="none">Unprinted<small>Natural, no ink</small></button>
