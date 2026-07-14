@@ -52,14 +52,14 @@
           </div>
           <div>
             <h4>Get in touch</h4>
-            <a href="mailto:ahmedmasroor1.am@gmail.com">ahmedmasroor1.am@gmail.com</a>
-            <a href="tel:+97140000000">+971 4 000 0000</a>
-            <p style="color:#9fb893;font-size:.9rem;margin-top:10px;line-height:1.6">Pro Pack Manufacturing FZ<br>Industrial Estate, Plot 14<br>Mon–Sat · 8am–6pm</p>
+            <a href="mailto:Info@propackconverters.com">Info@propackconverters.com</a>
+            <a href="tel:+923051822961">+92 305 1822961</a>
+            <p style="color:#9fb893;font-size:.9rem;margin-top:10px;line-height:1.6">Propack Converters (Pvt) Ltd<br>D-516, Ahsanabad, Scheme 33, Karachi<br>Mon–Sat · 9am–6pm</p>
           </div>
         </div>
         <div class="footer-bottom">
-          <span>© ${new Date().getFullYear()} Pro Pack Manufacturing. All rights reserved.</span>
-          <span style="display:flex;gap:18px;flex-wrap:wrap"><a href="#" style="display:inline">Privacy</a><a href="#" style="display:inline">Terms</a><a href="#" style="display:inline">FSC® C000000</a></span>
+          <span>© ${new Date().getFullYear()} Propack Converters (Pvt) Ltd. All rights reserved.</span>
+          <span style="display:flex;gap:18px;flex-wrap:wrap"><a href="#" style="display:inline">Privacy</a><a href="#" style="display:inline">Terms</a></span>
         </div>
       </div>
     </footer>`;
