@@ -52,7 +52,7 @@
           </div>
           <div>
             <h4>Get in touch</h4>
-            <a href="quote.html">hello@propack.co</a>
+            <a href="mailto:ahmedmasroor1.am@gmail.com">ahmedmasroor1.am@gmail.com</a>
             <a href="tel:+97140000000">+971 4 000 0000</a>
             <p style="color:#9fb893;font-size:.9rem;margin-top:10px;line-height:1.6">Pro Pack Manufacturing FZ<br>Industrial Estate, Plot 14<br>Mon–Sat · 8am–6pm</p>
           </div>
