@@ -204,10 +204,20 @@
       <a class="link-arrow reveal" data-d="2" href="about.html" style="color:var(--lime-2)">Tour the plant <span class="arrow">→</span></a>
     </div>
     <div class="grid mfg">
-      <div class="mfg-card reveal"><div class="stat-num" data-count="2.5" data-dec="1" data-suf="M">0</div><div class="stat-label">Units / month capacity</div></div>
-      <div class="mfg-card reveal" data-d="1"><div class="stat-num" data-count="6">0</div><div class="stat-label">Automated production lines</div></div>
+      <div class="mfg-card reveal"><div class="stat-num" data-count="10" data-suf="M+">0</div><div class="stat-label">Cartons / year</div></div>
+      <div class="mfg-card reveal" data-d="1"><div class="stat-num" data-count="35" data-suf="+">0</div><div class="stat-label">Years manufacturing</div></div>
       <div class="mfg-card reveal" data-d="2"><div class="stat-num" data-count="99.4" data-dec="1" data-suf="%">0</div><div class="stat-label">On-time delivery rate</div></div>
       <div class="mfg-card reveal" data-d="3"><div class="stat-num" data-count="100" data-suf="%">0</div><div class="stat-label">In-line quality inspection</div></div>
+    </div>
+    <style>
+    .plant-strip{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:16px;margin-top:36px}
+    .plant-strip img{display:block;width:100%;height:260px;object-fit:cover;border-radius:var(--r-lg)}
+    @media(max-width:700px){.plant-strip{grid-template-columns:1fr}.plant-strip img{height:220px}}
+    </style>
+    <div class="plant-strip reveal" data-d="2">
+      <img src="assets/img/plant-corrugator.jpg" alt="Corrugation line with a kraft paper reel loaded at the Propack Converters plant" loading="lazy">
+      <img src="assets/img/plant-reels.jpg" alt="Kraft paper reels stocked on the plant floor in Karachi" loading="lazy">
+      <img src="assets/img/plant-finished-stock.jpg" alt="Bundled finished cartons stacked ready for dispatch" loading="lazy">
     </div>
     <p class="lead reveal" style="margin-top:36px; max-width:60ch; color:#cfe0c2">From single prototypes to seven-figure runs, every carton passes the same QC lab — burst strength, ECT, print registration and food-contact compliance, checked and logged.</p>
   </div>
